@@ -1,0 +1,64 @@
+% layout 'default';
+
+% if ( my $message = $self->stash->{error_message}) {
+<p style="color:red;font-weight:bold;">
+  <%= $message %>
+</p>
+% }
+
+<div class="section">
+  <h3>clientの発行</h3>
+  <form action="/admin/add_client" method="post">
+    <label>client_name</label>
+    <input type="text" name="client_name" value="<%= $self->req->param('client_name') %>"/>
+    <input type="submit" value="発行" />
+  </form>
+</div>
+
+<div class="section">
+  <h3>clientの一覧</h3>
+  % if($clients->[0]) {
+  <table>
+    <tr>
+      <th>id</th><th>client_name</th><th>client_id</th><th>client_secret</th>
+    </tr>
+    % for my $client (@$clients) {
+    <tr>
+      <td><%= $client->id %></td>
+      <td><%= $client->client_name %></td>
+      <td><%= $client->client_id %></td>
+      <td><%= $client->client_secret %></td>
+    </tr>
+    % }
+  </table>
+  % }
+</div>
+
+<div class="section">
+  <h3>userの発行</h3>
+  <form action="/admin/add_user" method="post">
+    <label>user_name</label>
+    <input type="text" name="user_name" value="<%= $self->req->param('user_name') %>"/>
+    <label>password</label>
+    <input type="text" name="password" value="<%= $self->req->param('password') %>"/>
+    <input type="submit" value="発行" />
+  </form>
+</div>
+
+<div class="section">
+  <h3>userの一覧</h3>
+  % if($users->[0]) {
+  <table>
+    <tr>
+      <th>id</th><th>user_name</th><th>password</th>
+    </tr>
+    % for my $user (@$users) {
+    <tr>
+      <td><%= $user->id %></td>
+      <td><%= $user->user_name %></td>
+      <td><%= $user->password %></td>
+    </tr>
+    % }
+  </table>
+  % }
+</div>
