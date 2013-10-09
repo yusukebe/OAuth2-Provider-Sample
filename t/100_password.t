@@ -19,7 +19,7 @@ my $psgi = Mojo::Server::PSGI->new( app => Sample::Server::Web->new );
 my $app = $psgi->to_psgi_app;
 my $test = Plack::Test->create($app);
 
-subtest 'rotue' => sub {
+subtest 'route' => sub {
     my $res;
     $res = $test->request(GET '/admin');
     is $res->code, 200;
