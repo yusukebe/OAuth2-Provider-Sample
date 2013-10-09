@@ -30,4 +30,4 @@ CREATE TABLE user (
     user_name VARCHAR(255),
     password VARCHAR(255),
     PRIMARY KEY (`id`)
-);
+) DEFAULT CHARACTER SET 'utf8' engine=InnoDB;
