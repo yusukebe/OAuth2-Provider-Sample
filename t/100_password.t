@@ -35,7 +35,7 @@ subtest 'oauth' => sub {
     my $model = Sample::Server::Model->new;
     my $user = $model->db->single('user', { user_name => $user_name });
     ok $user;
-    is $user->password, 'password';
+    is $user->password, $password;
 
     my ($client_name, $client_id, $client_secret) = ('client', undef, undef);
     $res = $test->request(POST '/admin/add_client', [ client_name => 'client' ] );
