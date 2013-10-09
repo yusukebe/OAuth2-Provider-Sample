@@ -3,7 +3,6 @@ use Mojo::Base 'Mojolicious::Controller';
 use Mojolicious::Validator;
 use Sample::Server::Model;
 use String::Random qw/random_regex/;
-use Try::Tiny;
 
 sub index {
     my $self = shift;
@@ -12,7 +11,7 @@ sub index {
     $self->stash->{clients} = \@clients;
     my @users = $model->db->search('user', {}, { order_by => 'id' });
     $self->stash->{users} = \@users;
-    $self->render('/admin');
+    $self->render( '/admin');
 }
 
 sub add_client {
@@ -22,23 +21,22 @@ sub add_client {
 
     my $validation = Mojolicious::Validator->new->validation;
     $validation->input({ client_name => $client_name });
-    $validation->required('client_name')->regex(qr/^[0-9a-zA-Z_]/)->size(1,20);
+    $validation->required('client_name')->like(qr/^[0-9a-zA-Z_]/)->size(1,20);
     if($validation->error('client_name')) {
         $self->stash->{error_message} = 'client_name must be under 20 words and shoud be [0-9a-z-A-Z_]';
         return $self->render('/admin');
     }
 
     my $model = Sample::Server::Model->new;
-    
-    try {
-        $model->db->insert('client', {
-            client_name => $client_name,
-            client_id => random_regex('[0-9a-zA-Z]{16}'),
-            client_secret => random_regex('[0-9a-zA-Z]{32}'),
-        });
-    }catch{
-        warn $_;
-    };
+    if($model->db->single('client', {client_name => $client_name})) {
+        $self->stash->{error_message} = 'this client_name is not available';
+        return $self->render('/admin');
+    }
+    $model->db->insert('client', {
+        client_name => $client_name,
+        client_id => random_regex('[0-9a-zA-Z]{16}'),
+        client_secret => random_regex('[0-9a-zA-Z]{32}'),
+    });
     
     $self->redirect_to('/admin');
 }
@@ -54,8 +52,8 @@ sub add_user {
         user_name => $user_name,
         password => $password,
     });
-    $validation->required('user_name')->regex(qr/^[0-9a-zA-Z_]/)->size(1,20);
-    $validation->required('password')->regex(qr/^[0-9a-zA-Z_]/)->size(6,20);
+    $validation->required('user_name')->like(qr/^[0-9a-zA-Z_]/)->size(1,20);
+    $validation->required('password')->like(qr/^[0-9a-zA-Z_]/)->size(6,20);
     if($validation->error('user_name')) {
         $self->stash->{error_message} = 'user_name must be under 20 words and shoud be [0-9a-z-A-Z_]';
         return $self->render('/admin');
@@ -66,15 +64,14 @@ sub add_user {
     }
 
     my $model = Sample::Server::Model->new;
-    
-    try {
-        $model->db->insert('user', {
-            user_name => $user_name,
-            password => $password,
-        });
-    }catch{
-        warn $_;
-    };
+    if($model->db->single('user', {user_name => $user_name})) {
+        $self->stash->{error_message} = 'this user_name is not available';
+        return $self->render('/admin');
+    }
+    $model->db->insert('user', {
+        user_name => $user_name,
+        password => $password,
+    });
     
     $self->redirect_to('/admin');
 }

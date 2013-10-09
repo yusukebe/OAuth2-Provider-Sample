@@ -6,6 +6,9 @@
 </p>
 % }
 
+% my $clients = $self->stash->{clients} || [];
+% my $users = $self->stash->{users} || [];
+
 <div class="section">
   <h3>clientの発行</h3>
   <form action="/admin/add_client" method="post">

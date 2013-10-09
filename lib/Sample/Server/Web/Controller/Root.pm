@@ -9,7 +9,7 @@ sub index {
 sub protected_resource {
     my $self = shift;
     my $user = $self->stash->{user};
-    return $self->render_not_found() unless $user;
+    return $self->render_not_found_x unless $user;
     $self->render(json => { data => $user });
 }
 

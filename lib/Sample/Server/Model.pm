@@ -3,6 +3,7 @@ use DBI;
 use Teng;
 use Teng::Schema::Loader;
 use String::Random;
+use Sample;
 
 sub new {
     my ($class, %opt) = @_;
@@ -13,8 +14,9 @@ sub new {
 sub db {
     my $self = shift;
     return $self->{db} if $self->{db};
+    my $connect_info = Sample->config()->{connect_info} or die;
     my $dbh = DBI->connect(
-        'dbi:mysql:oauth2_sample', 'root', undef,
+        @$connect_info,
         { mysql_enable_utf8 => 1 }
     );
     my $db = Teng::Schema::Loader->load(

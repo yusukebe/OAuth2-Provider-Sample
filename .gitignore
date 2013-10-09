@@ -20,5 +20,6 @@ _build/
 local/
 log/
 inc/
+sandbox/
 !tmp*
-
+config.pl

@@ -1,4 +1,4 @@
-
+CREATE TABLE access_token (
     id INT UNSIGNED AUTO_INCREMENT,
     auth_id VARCHAR(255),
     token VARCHAR(255),

@@ -3,10 +3,16 @@ use parent qw/Sample::Server::Model OAuth::Lite2::Server::DataHandler/;
 use OAuth::Lite2::Model::AuthInfo;
 use OAuth::Lite2::Model::AccessToken;
 use String::Random qw/random_regex/;
+use Digest::MD5 qw/md5_hex/;
 
 sub new {
     my ($class, %args) = @_;
-    my $self = bless { request => undef, %args }, $class;
+    my $default_expires_in = delete $args{default_expires_in} || 60 * 60 * 24 * 30;
+    my $self = bless {
+        request => undef,
+        default_expires_in => $default_expires_in,
+        %args
+    }, $class;
     $self->init;
     $self;
 }
@@ -21,47 +27,60 @@ sub get_user_id {
 sub create_or_update_auth_info {
     my $self = shift;
     my %args = Params::Validate::validate(@_, {
-        client_id   => 1,
-        user_id     => 1,
-        scope       => { optional => 1 },
+        client_id => 1,
+        client_secret => { optional => 1 },
+        user_id => { optional => 1 },
+        refresh_token => { optional => 1 },
+        scope => { optional => 1 },
     });
-
-    my $auth_info = $self->db->single('auth_info', { client_id => $args{client_id}, user_id => $user_id });
-    unless($auth_info) {
-        $auth_info = $self->db->insert('auth_info', {
-            client_id => $args{client_id},
-            user_id => $args{user_id},
-            # scope => $args{scope} || '',
-        });
+    my $client = $self->db->single('client', { client_id => $args{client_id} });
+    my $token = random_regex('[0-9a-zA-Z]{32}');
+    
+    my $user_id;
+    if( $args{refresh_token} ) {
+        my $auth_info = $self->db->single('auth_info', { refresh_token => $args{refresh_token} });
+        $user_id = $auth_info->user_id if $auth_info;
     }
 
-    my $attr = {
+    my $auth_info = $self->db->insert('auth_info', {
+        client_id => $client->client_id,
+        client_secret => $client->client_secret,
+        user_id => $user_id || $args{user_id},
+        refresh_token => $token,
+    });
+    return OAuth::Lite2::Model::AuthInfo->new({
         id => $auth_info->id,
         client_id => $auth_info->client_id,
         user_id => $auth_info->user_id,
         scope => $auth_info->scope,
         refresh_token => $auth_info->refresh_token,
-    };
-    return OAuth::Lite2::Model::AuthInfo->new($attr);
+    });
 }
 
 sub create_or_update_access_token {
     my $self = shift;
-    my %attr = Params::Validate::validate(@_, {
-        auth_info   => 1,
+    my %args = Params::Validate::validate(@_, {
+        auth_info => 1,
+        expires_in => { optional => 1 },
     });
-    my $access_token = $self->db->single('access_token', {
-        auth_id => $attr{auth_info}->id,
-    });
-    unless($access_token) {
-        $access_token = $self->db->insert('access_token', {
-            auth_id => $attr{auth_info}->id,
-            token => random_regex('[0-9a-zA-Z]{32}'),
-            expires_in => 60 * 60,
+    my $auth_info = $args{auth_info};
+    my $token = random_regex('[0-9a-zA-Z]{32}');
+    my $access_token = $self->db->single('access_token', { auth_id => $args{auth_info}->id });
+    if ($access_token) {
+        $access_token->update({
+            token => $token, expires_in => $args{expires_in} || $self->{default_expires_in},
             created_on => time(),
         });
-    };
-
+    } else {
+        $access_token = $self->db->insert('access_token',
+            {
+                auth_id => $auth_info->id,
+                token => $token,
+                expires_in => $args{expires_in} || $self->{default_expires_in},
+                created_on => time(),
+            }
+        );
+    }
     return OAuth::Lite2::Model::AccessToken->new({
         auth_id => $access_token->auth_id,
         token => $access_token->token,
@@ -72,16 +91,19 @@ sub create_or_update_access_token {
 
 sub validate_client {
     my ($self, $client_id, $client_secret, $grant_type) = @_;
-    my $client = $self->db->single('client', { client_id => $client_id });
+    my $client = $self->db->single('client', { client_id => $client_id, client_secret => $client_secret });
     return unless $client;
-    return unless $client->client_secret eq $client_secret;
     return 1;
 }
 
 sub get_access_token {
     my ($self, $token) = @_;
     my $access_token = $self->db->single('access_token', { token => $token });
-    return unless $access_token;
+
+    if(!$access_token || time() > $access_token->created_on + $access_token->expires_in ) {
+        return;
+    }
+
     return OAuth::Lite2::Model::AccessToken->new({
         auth_id => $access_token->auth_id,
         token => $access_token->token,
@@ -93,6 +115,19 @@ sub get_access_token {
 sub get_auth_info_by_id {
     my ( $self, $auth_id ) = @_;
     my $auth_info = $self->db->single( 'auth_info', { id => $auth_id } );
+    return unless $auth_info;
+    return OAuth::Lite2::Model::AuthInfo->new({
+        id => $auth_info->id,
+        client_id => $auth_info->client_id,
+        user_id => $auth_info->user_id,
+        scope => $auth_info->scope,
+        refresh_token => $auth_info->refresh_token,
+    });
+}
+
+sub get_auth_info_by_refresh_token {
+    my ($self, $refresh_token) = @_;
+    my $auth_info = $self->db->single( 'auth_info', { refresh_token => $refresh_token } );
     return unless $auth_info;
     return OAuth::Lite2::Model::AuthInfo->new({
         id => $auth_info->id,
