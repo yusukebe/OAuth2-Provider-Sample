@@ -1,5 +1,13 @@
 # carton snapshot format: version 1.0
 DISTRIBUTIONS
+  Algorithm-Diff-1.1902
+    pathname: T/TY/TYEMQ/Algorithm-Diff-1.1902.tar.gz
+    provides:
+      Algorithm::Diff 1.1902
+      Algorithm::Diff::_impl 1.1902
+      Algorithm::DiffOld 1.1
+    requirements:
+      ExtUtils::MakeMaker 0
   Apache-LogFormat-Compiler-0.13
     pathname: K/KA/KAZEBURO/Apache-LogFormat-Compiler-0.13.tar.gz
     provides:
@@ -296,6 +304,17 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.11
       File::Spec 0
       IO::Dir 0
+  File-Slurp-9999.19
+    pathname: U/UR/URI/File-Slurp-9999.19.tar.gz
+    provides:
+      File::Slurp 9999.19
+      FileSlurp_12 9999.13
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      Fcntl 0
+      POSIX 0
   Filesys-Notify-Simple-0.12
     pathname: M/MI/MIYAGAWA/Filesys-Notify-Simple-0.12.tar.gz
     provides:
@@ -956,6 +975,15 @@ DISTRIBUTIONS
       Test::More 0
       Test::NoWarnings 0.02
       Test::Tester 0.04
+  Test-Differences-0.61
+    pathname: O/OV/OVID/Test-Differences-0.61.tar.gz
+    provides:
+      Test::Differences 0.61
+    requirements:
+      Data::Dumper 2.126
+      Module::Build 0.36
+      Test::More 0
+      Text::Diff 0.35
   Test-Exception-0.32
     pathname: A/AD/ADIE/Test-Exception-0.32.tar.gz
     provides:
@@ -968,6 +996,41 @@ DISTRIBUTIONS
       Test::Harness 2.03
       Test::More 0.7
       Test::Simple 0.7
+  Test-Fatal-0.013
+    pathname: R/RJ/RJBS/Test-Fatal-0.013.tar.gz
+    provides:
+      Test::Fatal 0.013
+    requirements:
+      Carp 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 6.30
+      Test::Builder 0
+      Try::Tiny 0.07
+      strict 0
+      warnings 0
+  Test-Flatten-0.09
+    pathname: X/XA/XAICRON/Test-Flatten-0.09.tar.gz
+    provides:
+      Test::Flatten 0.09
+    requirements:
+      ExtUtils::MakeMaker 6.36
+      Test::More 0.96
+      Test::Requires 0.06
+  Test-Name-FromLine-0.11
+    pathname: S/SA/SATOH/Test-Name-FromLine-0.11.tar.gz
+    provides:
+      Test::Name::FromLine 0.11
+    requirements:
+      CPAN::Meta 0
+      CPAN::Meta::Prereqs 0
+      ExtUtils::MakeMaker 6.36
+      File::Slurp 0
+      Filter::Util::Call 0
+      Module::Build 0.38
+      Test::Builder 0
+      Test::Differences 0
+      Test::Fatal 0
+      Test::More 0
   Test-NoWarnings-1.04
     pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
     provides:
@@ -1042,6 +1105,17 @@ DISTRIBUTIONS
       File::Copy::Recursive 0
       Test::SharedFork 0.06
       perl 5.008
+  Text-Diff-1.41
+    pathname: O/OV/OVID/Text-Diff-1.41.tar.gz
+    provides:
+      Text::Diff 1.41
+      Text::Diff::Base 1.41
+      Text::Diff::Config 1.41
+      Text::Diff::Table 1.41
+    requirements:
+      Algorithm::Diff 1.19
+      Exporter 0
+      ExtUtils::MakeMaker 0
   Try-Tiny-0.18
     pathname: D/DO/DOY/Try-Tiny-0.18.tar.gz
     provides:

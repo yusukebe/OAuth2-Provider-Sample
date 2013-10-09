@@ -7,3 +7,5 @@ requires 'Path::Tiny';
 
 test_requires 'Test::mysqld';
 test_requires 'SQL::SplitStatement';
+test_requires 'Test::Name::FromLine';
+test_requires 'Test::Flatten';

@@ -1,0 +1,8 @@
+--lib
+--color
+--trap
+--merge
+--recurse
+--verbose
+--timer
+--exec "carton exec perl -Ilib -MTest::Name::FromLine -MTest::Flatten"
