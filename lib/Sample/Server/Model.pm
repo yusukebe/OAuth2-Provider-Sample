@@ -2,7 +2,6 @@ package Sample::Server::Model;
 use DBI;
 use Teng;
 use Teng::Schema::Loader;
-use String::Random;
 use Sample;
 
 sub new {
