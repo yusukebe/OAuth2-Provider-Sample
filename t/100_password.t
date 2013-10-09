@@ -6,7 +6,6 @@ use Plack::Test;
 use Mojo::Server::PSGI;
 use HTTP::Request::Common;
 use OAuth::Lite2::Util qw/build_content/;
-use OAuth::Lite2::ParamMethods qw/AUTH_HEADER/;
 use JSON qw/decode_json/;
 
 BEGIN {
