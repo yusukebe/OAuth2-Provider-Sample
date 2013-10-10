@@ -14,6 +14,7 @@ CREATE TABLE auth_info (
     client_secret VARCHAR(255),
     scope VARCHAR(255),
     refresh_token VARCHAR(255),
+    code VARCHAR(255),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET 'utf8' engine=InnoDB;
 
